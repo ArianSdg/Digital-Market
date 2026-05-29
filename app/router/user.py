@@ -40,7 +40,7 @@ async def get_user(user: User = Depends(get_current_user)):
         raise HTTPException(status_code=404, detail="User not found.")
     return user
 
-@router.get('/me/read_item', response_model=UserItemDisplay)
+@router.get('/me/item/{item_id}', response_model=UserItemDisplay)
 async def read_my_item(
         item_id: int,
         db: AsyncSession = Depends(get_db),
@@ -48,7 +48,7 @@ async def read_my_item(
 ):
     return await db_user_item.read_my_item(db, item_id, user)
 
-@router.patch('/me/edit-profile', response_model=UserDisplay)
+@router.patch('/me/profile', response_model=UserDisplay)
 async def update_user_partial(
         request: UserUpdate,
         curr_user: User = Depends(get_current_user),
