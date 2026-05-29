@@ -3,21 +3,21 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Transaction
+from app.db.db_user import get_user_by_id
+from app.db.models import Transaction, User
 from app.schema.transaction import TransactionBase
 
 
 async def create_transaction(db: AsyncSession, request: TransactionBase):
-    try:
-        new_transaction = Transaction(
-            quantity=request.quantity,
-            total_price=request.total_price,
-            transaction_type=request.transaction_type
-        )
-    except IntegrityError:
-        raise HTTPException(status_code=400, detail='This transaction had been made before')
-
+    new_transaction = Transaction(
+        user_id=request.user_id,
+        item_id=request.item_id,
+        quantity=request.quantity,
+        total_price=request.total_price,
+        transaction_type=request.transaction_type
+    )
     db.add(new_transaction)
+    await db.flush()
     await db.refresh(new_transaction)
     return new_transaction
 
@@ -25,13 +25,16 @@ async def get_transaction_by_id(db: AsyncSession, id: int):
     result = await db.execute(select(Transaction).where(Transaction.id == id))
     return result.scalar_one_or_none()
 
-async def get_user_transactions(db: AsyncSession):
-    result = await db.execute(select(Transaction))
-    return result.all()
+async def get_user_transactions(db: AsyncSession, user_id: int):
+    user = await get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail='User not found')
+    return user.transactions
 
 async def remove_transaction(db: AsyncSession, id: int):
-    transaction = get_transaction_by_id(db, id)
+    transaction = await get_transaction_by_id(db, id)
     if not transaction:
         raise HTTPException(status_code=404, detail='Transaction not found')
     await db.delete(transaction)
+    await db.flush()
     return transaction

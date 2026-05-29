@@ -1,3 +1,17 @@
-.*
-__pycache__
-digital-market.db
+# Virtual Environment
+venv/
+.venv/
+
+# PyCharm
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment Variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db

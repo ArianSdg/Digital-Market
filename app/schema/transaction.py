@@ -6,6 +6,8 @@ from app.core.enums.transaction_type import TransactionType
 
 
 class TransactionBase(BaseModel):
+    user_id: int
+    item_id: int
     quantity: int
     total_price: float
     transaction_type: TransactionType
