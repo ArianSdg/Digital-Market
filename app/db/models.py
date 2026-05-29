@@ -1,8 +1,10 @@
 from datetime import datetime
 from sqlalchemy import Column, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql.sqltypes import Integer, String, DateTime, Float, Boolean
 
+from app.core.enums.role import Role
+from app.core.enums.transaction_type import TransactionType
 from app.db.database import Base
 
 
@@ -24,7 +26,7 @@ class User(Base):
     username = Column(String, nullable=False, unique=True)
     email = Column(String, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
-    role = Column(String, default="user")
+    role: Mapped[Role] = mapped_column(default=Role.user)
     is_active = Column(Boolean, default=True)
     created_on = Column(DateTime, default=datetime.now)
     updated_on = Column(DateTime, default=datetime.now, onupdate=datetime.now)
@@ -49,6 +51,6 @@ class Transaction(Base):
     quantity = Column(Integer, nullable=False)
     total_price = Column(Float)
     transaction_type = Column(String)
-    transaction_date = Column(DateTime, default=datetime.now)
+    transaction_date: Mapped[TransactionType]
     user = relationship("User", back_populates="transactions")
     item = relationship("Item", back_populates="transactions")
