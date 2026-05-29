@@ -38,3 +38,13 @@ class UserItem(Base):
     acquired_at = Column(DateTime, default=datetime.now)
     user = relationship("DbUser", back_populates="inventory")
     item = relationship("DbItems", back_populates="owners")
+
+class Transaction(Base):
+    __tablename__ = 'transactions'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.user_id'))
+    item_id = Column(Integer, ForeignKey('items.item_id'))
+    quantity = Column(Integer)
+    price = Column(Float)
+    transaction_type = Column(String)
+    transaction_date = Column(DateTime, default=datetime.now)

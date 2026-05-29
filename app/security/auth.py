@@ -8,13 +8,13 @@ from jose import JWTError, jwt
 
 from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from app.db.database import get_db
-from app.db.models import DbUser
+from app.db.models import User
 from app.db.db_user import get_user_by_username
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='user/token')
 password_hash = PasswordHash.recommended()
 
-async def authenticate_user(db: AsyncSession, username: str, password: str) -> DbUser | bool:
+async def authenticate_user(db: AsyncSession, username: str, password: str) -> User | bool:
     user = await get_user_by_username(db, username)
     if not user:
         return False
@@ -51,12 +51,12 @@ async def get_current_user(db: AsyncSession = Depends(get_db), token: str = Depe
         raise credentials_exception
     return user
 
-async def get_current_active_user(user: DbUser = Depends(get_current_user)):
+async def get_current_active_user(user: User = Depends(get_current_user)):
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Inactive user.')
     return user
 
-async def get_current_admin(user: DbUser = Depends(get_current_active_user)):
+async def get_current_admin(user: User = Depends(get_current_active_user)):
     if user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You don't have administrator permissions")
     return user

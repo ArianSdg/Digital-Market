@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import db_item, db_user
 from app.db.db_user_item import get_specific_user_item
-from app.db.models import DbUserItems, DbUser
+from app.db.models import UserItem, User
 
 
 async def add_item_to_user(db: AsyncSession, item_id: int, user_id: int, quantity: int):
@@ -18,7 +18,7 @@ async def add_item_to_user(db: AsyncSession, item_id: int, user_id: int, quantit
     if user_item:
         user_item.quantity += quantity
     else:
-        user_item = DbUserItems(
+        user_item = UserItem(
             user_id=user_id,
             item_id=item_id,
             quantity=quantity
@@ -43,7 +43,7 @@ async def decrease_item_quantity_from_user(db: AsyncSession, item_id: int, user_
     await db.refresh(user_item)
     return user_item
 
-async def read_my_item(db: AsyncSession, item_id: int, user: DbUser):
+async def read_my_item(db: AsyncSession, item_id: int, user: User):
     user_item = await get_specific_user_item(db, item_id, user.user_id)
     if not user_item:
         raise HTTPException(status_code=404, detail='Item not found')
