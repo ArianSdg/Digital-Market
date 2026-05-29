@@ -19,5 +19,6 @@ app.include_router(admin_user.router)
 app.include_router(admin_item.router)
 app.include_router(admin_user_item.router)
 
+# TODO: create first admin
 async def create_first_admin():
     pass
