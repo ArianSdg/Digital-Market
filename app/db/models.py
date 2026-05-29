@@ -50,7 +50,7 @@ class Transaction(Base):
     item_id = Column(Integer, ForeignKey('items.item_id'))
     quantity = Column(Integer, nullable=False)
     total_price = Column(Float)
-    transaction_type = Column(String)
-    transaction_date: Mapped[TransactionType]
+    transaction_type: Mapped[TransactionType]
+    transaction_date = Column(DateTime, default=datetime.now)
     user = relationship("User", back_populates="transactions")
     item = relationship("Item", back_populates="transactions")
