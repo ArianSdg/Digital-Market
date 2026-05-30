@@ -12,6 +12,7 @@ from app.schema.user import UserBase, UserDisplay, UserUpdate
 from app.db import db_user_item, db_user
 from app.schema.user_item import UserItemDisplay
 from app.security.auth import get_current_user, create_access_token, authenticate_user
+from app.services import user_service
 
 router = APIRouter(prefix='/user', tags=['users'])
 
@@ -55,3 +56,7 @@ async def update_user_partial(
         db: AsyncSession = Depends(get_db)
         ):
     return await db_user.update_user_partial(db, curr_user, request)
+
+@router.get('/me/balance')
+async def get_balance(db: AsyncSession = Depends(get_db), curr_user: User = Depends(get_current_user)):
+    return await user_service.get_balance(db, curr_user)
