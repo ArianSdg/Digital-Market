@@ -12,7 +12,7 @@ from app.schema.user import UserBase, UserDisplay, UserUpdate
 from app.db import db_user_item, db_user
 from app.schema.user_item import UserItemDisplay
 from app.security.auth import get_current_user, create_access_token, authenticate_user
-from app.services import wallet_service
+from app.services import wallet_service, inventory_service
 
 router = APIRouter(prefix='/user', tags=['users'])
 
@@ -47,7 +47,7 @@ async def read_my_item(
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user)
 ):
-    return await db_user_item.read_my_item(db, item_id, user)
+    return await inventory_service.read_my_item(db, item_id, user)
 
 @router.patch('/me/profile', response_model=UserDisplay)
 async def update_user_partial(
@@ -58,5 +58,5 @@ async def update_user_partial(
     return await db_user.update_user_partial(db, curr_user, request)
 
 @router.get('/me/balance')
-async def get_balance(db: AsyncSession = Depends(get_db), curr_user: User = Depends(get_current_user)):
-    return await wallet_service.get_balance(db, curr_user)
+async def get_balance(curr_user: User = Depends(get_current_user)):
+    return curr_user.balance
