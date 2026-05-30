@@ -27,6 +27,7 @@ class User(Base):
     email = Column(String, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
     role: Mapped[Role] = mapped_column(default=Role.user)
+    balance = Column(Float, default=0)
     is_active = Column(Boolean, default=True)
     created_on = Column(DateTime, default=datetime.now)
     updated_on = Column(DateTime, default=datetime.now, onupdate=datetime.now)

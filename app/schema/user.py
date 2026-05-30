@@ -15,6 +15,7 @@ class UserDisplay(BaseModel):
     email: str
     role: Role
     is_active: bool
+    balance: float
     created_on: datetime
     updated_on: datetime
     class Config:
