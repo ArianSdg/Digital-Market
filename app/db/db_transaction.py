@@ -1,20 +1,26 @@
 from fastapi import HTTPException
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.enums.transaction_type import TransactionType
 from app.db.db_user import get_user_by_id
-from app.db.models import Transaction, User
-from app.schema.transaction import TransactionBase
+from app.db.models import Transaction
 
 
-async def create_transaction(db: AsyncSession, request: TransactionBase):
+async def create_transaction(
+        db: AsyncSession,
+        user_id: int,
+        item_id: int,
+        quantity: int,
+        total_price: float,
+        transaction_type: TransactionType
+):
     new_transaction = Transaction(
-        user_id=request.user_id,
-        item_id=request.item_id,
-        quantity=request.quantity,
-        total_price=request.total_price,
-        transaction_type=request.transaction_type
+        user_id=user_id,
+        item_id=item_id,
+        quantity=quantity,
+        total_price=total_price,
+        transaction_type=transaction_type
     )
     db.add(new_transaction)
     await db.flush()
