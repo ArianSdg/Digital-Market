@@ -18,3 +18,14 @@ async def decrease_balance(db: AsyncSession, user_id: int, amount: float):
     user.balance -= amount
     await db.flush(user)
     return user
+
+async def transfer_balance(db: AsyncSession, from_user_id: int, to_user_id: id, amount: float):
+    from_user = await db_user.get_user_by_id(db, from_user_id)
+    to_user = await db_user.get_user_by_id(db, to_user_id)
+    if not from_user:
+        raise HTTPException(status_code=404, detail='User not found')
+    if not to_user:
+        raise HTTPException(status_code=404, detail='User not found')
+    from_user -= amount
+    to_user += amount
+    return {'Detail: ': f'Transferred from {from_user.username} to {to_user.username} successfully.'}
