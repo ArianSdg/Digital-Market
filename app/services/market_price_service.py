@@ -1,5 +1,3 @@
-import math
-
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +9,10 @@ async def calculate_item_price(db: AsyncSession, item_id):
     if not item:
         raise HTTPException(status_code=404, detail='Item not found')
 
+    if item.total_supply == 0:
+        max_price = item.default_price * 3
+        return max_price
+
     ratio = item.target_supply / item.total_supply
 
     new_price = item.default_price * ratio ** (1 / 3)
@@ -19,4 +21,11 @@ async def calculate_item_price(db: AsyncSession, item_id):
     new_price = max(min_price, min(new_price, max_price))
     return new_price
 
-
+async def update_item_price(db: AsyncSession, item_id: int):
+    item = await get_item_by_id(db, item_id)
+    if not item:
+        raise HTTPException(status_code=404, detail='Item not found')
+    new_price = await calculate_item_price(db, item_id)
+    item.dynamic_price = new_price
+    await db.flush()
+    return item
