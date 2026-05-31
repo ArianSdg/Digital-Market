@@ -9,7 +9,6 @@ from app.services.transaction_service import record_transaction
 from app.services.wallet_service import decrease_balance, increase_balance
 
 
-# TODO: Change dynamic price to requested price
 async def buy_item(db: AsyncSession, user_id: int, item_id: int, quantity: int):
     user = await get_user_by_id(db, user_id)
     if not user:
