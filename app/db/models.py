@@ -3,6 +3,7 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.sql.sqltypes import Integer, String, DateTime, Float, Boolean
 
+from app.core.enums.order_type import OrderStatus, OrderType
 from app.core.enums.role import Role
 from app.core.enums.transaction_type import TransactionType
 from app.db.database import Base
@@ -67,7 +68,8 @@ class MarketOrder(Base):
     quantity = Column(Integer, nullable=False)
     remaining_quantity = Column(Integer)
     order_price = Column(Float, default=0)
-    order_status = Column(Boolean, default=True)
+    order_status: Mapped[OrderStatus] = mapped_column(nullable=False)
+    order_type: Mapped[OrderType] = mapped_column(nullable=False)
     created_at = Column(DateTime, default=datetime.now)
     user = relationship("User", back_populates="market_order")
     item = relationship("Item", back_populates="market_order")
