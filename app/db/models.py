@@ -20,6 +20,7 @@ class Item(Base):
     target_supply = Column(Integer, default=0)
     owners = relationship("UserItem", back_populates="item")
     transactions = relationship("Transaction", back_populates="item")
+    market_order = relationship("MarketOrder", back_populates="item")
 
 class User(Base):
     __tablename__ = 'users'
@@ -34,6 +35,7 @@ class User(Base):
     updated_on = Column(DateTime, default=datetime.now, onupdate=datetime.now)
     inventory = relationship("UserItem", back_populates="user")
     transactions = relationship("Transaction", back_populates="user")
+    market_order = relationship("MarketOrder", back_populates="user")
 
 class UserItem(Base):
     __tablename__ = 'user_items'
@@ -56,3 +58,16 @@ class Transaction(Base):
     transaction_date = Column(DateTime, default=datetime.now)
     user = relationship("User", back_populates="transactions")
     item = relationship("Item", back_populates="transactions")
+
+class MarketOrder(Base):
+    __tablename__ = 'market_orders'
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.user_id'))
+    item_id = Column(Integer, ForeignKey('items.item_id'))
+    quantity = Column(Integer, nullable=False)
+    remaining_quantity = Column(Integer)
+    order_price = Column(Float, default=0)
+    order_status = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.now)
+    user = relationship("User", back_populates="market_order")
+    item = relationship("Item", back_populates="market_order")
