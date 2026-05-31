@@ -17,6 +17,7 @@ class Item(Base):
     dynamic_price = Column(Float)
     craftable = Column(Boolean, default=False)
     total_supply = Column(Integer, default=0)
+    target_supply = Column(Integer, default=0)
     owners = relationship("UserItem", back_populates="item")
     transactions = relationship("Transaction", back_populates="item")
 
