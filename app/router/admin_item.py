@@ -8,9 +8,9 @@ from app.db.models import User
 from app.schema.item import ItemDisplay, ItemBase, ItemUpdate
 from app.security.auth import get_current_admin
 
-router = APIRouter(prefix='/admin', tags=['Admin perms for items'])
+router = APIRouter(prefix='/admin/item', tags=['Admin perms for items'])
 
-@router.post('/', response_model=ItemDisplay)
+@router.post('/create', response_model=ItemDisplay)
 async def create_item(
         request: ItemBase,
         db: AsyncSession = Depends(get_db),
@@ -18,11 +18,11 @@ async def create_item(
 ):
     return await db_item.create_item(db, request)
 
-@router.get('/item/{id}', response_model=ItemDisplay)
+@router.get('/{id}', response_model=ItemDisplay)
 async def get_item_by_id(id: int, db: AsyncSession = Depends(get_db), admin: User = Depends(get_current_admin)):
     return await db_item.get_item_by_id(db, id)
 
-@router.get('/', response_model=List[ItemDisplay])
+@router.get('/get/all', response_model=List[ItemDisplay])
 async def get_items(db: AsyncSession = Depends(get_db), admin: User = Depends(get_current_admin)):
     return await db_item.get_items(db)
 
@@ -35,7 +35,7 @@ async def update_item(
 ):
     return await db_item.update_item(db, id, request)
 
-@router.patch('/item/{id}', response_model=ItemDisplay)
+@router.patch('/patch/{id}', response_model=ItemDisplay)
 async def update_item_partial(
         id: int,
         request: ItemUpdate,
@@ -44,6 +44,6 @@ async def update_item_partial(
 ):
     return await db_item.item_update_partial(db, id, request)
 
-@router.delete('/item/{id}')
+@router.delete('/{id}')
 async def delete_item(id: int, db: AsyncSession = Depends(get_db), admin: User = Depends(get_current_admin)):
     return await db_item.delete_item(db, id)
