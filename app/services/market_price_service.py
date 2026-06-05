@@ -9,11 +9,11 @@ async def calculate_item_price(db: AsyncSession, item_id):
     if not item:
         raise HTTPException(status_code=404, detail='Item not found')
 
-    if item.total_supply == 0:
+    if item.market_stock == 0:
         max_price = item.default_price * 3
         return max_price
 
-    ratio = item.target_supply / item.total_supply
+    ratio = item.market_stock
 
     new_price = item.default_price * ratio ** (1 / 3)
     min_price = item.default_price * 0.3
