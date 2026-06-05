@@ -14,8 +14,7 @@ async def create_item(db: AsyncSession, request: ItemBase):
             default_price=request.default_price,
             dynamic_price=request.dynamic_price,
             craftable=request.craftable,
-            total_supply=request.total_supply,
-            target_supply=request.target_supply
+            market_stock=request.market_stock
         )
         db.add(new_item)
         await db.commit()
