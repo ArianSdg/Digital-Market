@@ -5,6 +5,7 @@ from app.core.enums.transaction_type import TransactionType
 from app.db.db_item import get_item_by_id
 from app.db.db_user import get_user_by_id
 from app.services.inventory_service import add_item_to_user, decrease_item_quantity_from_user
+from app.services.market_price_service import update_item_price
 from app.services.transaction_service import record_transaction
 from app.services.wallet_service import decrease_balance, increase_balance
 
@@ -18,10 +19,14 @@ async def buy_item(db: AsyncSession, user_id: int, item_id: int, quantity: int):
         raise HTTPException(status_code=404, detail='Item not found')
     if quantity <= 0:
         raise HTTPException(status_code=400, detail='Quantity must be greater than zero')
+    if item.market_stock < quantity:
+        raise HTTPException(status_code=400, detail='Not enough stock in market')
 
     total_price = float(quantity * item.dynamic_price)
     await decrease_balance(db, user_id, total_price)
     await add_item_to_user(db, item_id, user_id, quantity)
+    item.market_stock -= quantity
+    await update_item_price(db, item_id)
     recorded_transaction = await record_transaction(db, user_id, item_id, quantity, total_price, TransactionType.BUY)
 
     return {'Transaction: ': recorded_transaction}
