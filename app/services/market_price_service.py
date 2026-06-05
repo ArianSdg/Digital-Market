@@ -1,3 +1,5 @@
+import math
+
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -13,11 +15,11 @@ async def calculate_item_price(db: AsyncSession, item_id):
         max_price = item.default_price * 3
         return max_price
 
-    ratio = item.market_stock
-
-    new_price = item.default_price * ratio ** (1 / 3)
     min_price = item.default_price * 0.3
     max_price = item.default_price * 3
+
+    ratio = max_price / item.market_stock
+    new_price = item.default_price * math.sqrt(ratio)
     new_price = max(min_price, min(new_price, max_price))
     return new_price
 
