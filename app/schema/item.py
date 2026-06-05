@@ -5,7 +5,8 @@ class ItemBase(BaseModel):
     default_price: float
     dynamic_price: float
     craftable: bool
-    amount: int
+    total_supply: int
+    target_supply: int
 
 class ItemDisplay(BaseModel):
     item_id: int
@@ -13,7 +14,8 @@ class ItemDisplay(BaseModel):
     default_price: float
     dynamic_price: float
     craftable: bool
-    amount: int
+    total_supply: int
+    target_supply: int
     class Config:
         for_attributes = True
 
