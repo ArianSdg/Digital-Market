@@ -1,5 +1,7 @@
 from fastapi import HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.db import db_item, db_user
 from app.db.db_user_item import get_specific_user_item
@@ -50,10 +52,9 @@ async def read_my_item(db: AsyncSession, item_id: int, user: User):
     return user_item
 
 async def get_user_inventory(db: AsyncSession, user_id: int):
-    user = await db_user.get_user_by_id(db, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail='User not found')
-    return user.inventory
+    result = await db.execute(select(UserItem).options(selectinload(UserItem.item)).where(UserItem.user_id == user_id))
+    inventory = result.scalars().all()
+    return inventory
 
 async def get_user_item_quantity(db: AsyncSession, item_id: int, user_id: int):
     user_item = await get_specific_user_item(db, item_id, user_id)
