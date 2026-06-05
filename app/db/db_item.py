@@ -10,11 +10,12 @@ from app.schema.item import ItemBase, ItemUpdate
 async def create_item(db: AsyncSession, request: ItemBase):
     try:
         new_item = Item(
-            name = request.name,
-            default_price = request.default_price,
-            dynamic_price = request.dynamic_price,
-            craftable = request.craftable,
-            amount = request.amount
+            name=request.name,
+            default_price=request.default_price,
+            dynamic_price=request.dynamic_price,
+            craftable=request.craftable,
+            total_supply=request.total_supply,
+            target_supply=request.target_supply
         )
         db.add(new_item)
         await db.commit()
