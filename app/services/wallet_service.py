@@ -3,29 +3,29 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import db_user
 
-async def increase_balance(db: AsyncSession, user_id: int, amount: float):
+async def increase_balance(db: AsyncSession, user_id: int, price: float):
     user = await db_user.get_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
-    if amount <= 0:
-        raise HTTPException(status_code=400, detail='Wrong amount to increase balance')
-    user.balance += amount
+    if price <= 0:
+        raise HTTPException(status_code=400, detail='Wrong price to increase balance')
+    user.balance += price
     await db.flush()
     return user
 
-async def decrease_balance(db: AsyncSession, user_id: int, amount: float):
+async def decrease_balance(db: AsyncSession, user_id: int, price: float):
     user = await db_user.get_user_by_id(db, user_id)
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
-    if user.balance < amount:
+    if user.balance < price:
         raise HTTPException(status_code=400, detail='Not enough balance')
-    if amount <= 0:
-        raise HTTPException(status_code=400, detail='Wrong amount to increase balance')
-    user.balance -= amount
+    if price <= 0:
+        raise HTTPException(status_code=400, detail='Wrong price to increase balance')
+    user.balance -= price
     await db.flush()
     return user
 
-async def transfer_balance(db: AsyncSession, from_user_id: int, to_user_id: int, amount: float):
+async def transfer_balance(db: AsyncSession, from_user_id: int, to_user_id: int, price: float):
     from_user = await db_user.get_user_by_id(db, from_user_id)
     to_user = await db_user.get_user_by_id(db, to_user_id)
     if not from_user:
@@ -35,11 +35,11 @@ async def transfer_balance(db: AsyncSession, from_user_id: int, to_user_id: int,
     if from_user_id == to_user_id:
         raise HTTPException(status_code=400, detail="Can't transfer item to the same user")
 
-    if from_user.balance < amount:
+    if from_user.balance < price:
         raise HTTPException(status_code=400, detail='Not enough balance')
-    if amount <= 0:
-        raise HTTPException(status_code=400, detail='Wrong amount to increase balance')
+    if price <= 0:
+        raise HTTPException(status_code=400, detail='Wrong price to increase balance')
 
-    await decrease_balance(db, from_user_id, amount)
-    await increase_balance(db, to_user_id, amount)
+    await decrease_balance(db, from_user_id, price)
+    await increase_balance(db, to_user_id, price)
     return {'Detail: ': f'Transferred from {from_user.username} to {to_user.username} successfully.'}
