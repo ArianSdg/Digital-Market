@@ -3,7 +3,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.enums.order_type import OrderStatus
-from app.db.db_user import get_user_by_id
 from app.db.models import MarketOrder
 from app.schema.market_order import MarketOrderCreate, MarketOrderUpdate
 
@@ -14,7 +13,6 @@ async def create_order(db: AsyncSession, request: MarketOrderCreate):
         item_id=request.item_id,
         quantity=request.quantity,
         order_price=request.order_price,
-        order_type=request.order_type
     )
 
     db.add(new_order)
@@ -23,17 +21,13 @@ async def create_order(db: AsyncSession, request: MarketOrderCreate):
 
 async def get_open_orders(db: AsyncSession):
     open_orders = await db.execute(select(MarketOrder).where(MarketOrder.order_status == OrderStatus.OPEN))
-    return open_orders.all()
+    return open_orders.scalars().all()
 
 async def get_user_orders(db: AsyncSession, user_id: int):
-    user = get_user_by_id(db, user_id)
-    if not user:
-        raise HTTPException(status_code=404, detail='User not found')
-
     user_orders = await db.execute(select(MarketOrder).where(MarketOrder.user_id == user_id))
-    return user_orders.all()
+    return user_orders.scalars().all()
 
-async def get_order_by_id(db: AsyncSession, id):
+async def get_order_by_id(db: AsyncSession, id: int):
     order = await db.execute(select(MarketOrder).where(MarketOrder.id == id))
     return order.scalar_one_or_none()
 
