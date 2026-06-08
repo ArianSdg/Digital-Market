@@ -12,7 +12,6 @@ class MarketOrderCreate(BaseModel):
     item_id: int
     quantity: int = Field(gt=0)
     order_price: float = Field(gt=0)
-    order_type: OrderType
 
 class MarketOrderDisplay(BaseModel):
     user: UserDisplay
@@ -27,8 +26,6 @@ class MarketOrderDisplay(BaseModel):
         from_attributes = True
 
 class MarketOrderUpdate(BaseModel):
-    user_id: int | None = Field(None, example="1")
-    item_id: int | None = Field(None, example="1")
     quantity: int | None = Field(None, gt=0, example="10")
     order_price: float | None = Field(None, gt=0, example="100.10")
-    order_type: OrderType | Field(None, example="buy")
+    order_type: OrderType | None = Field(None, example="buy")
